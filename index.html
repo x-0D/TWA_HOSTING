@@ -130,153 +130,174 @@
 (() => {
   const tg = window.Telegram.WebApp;
 
-  // Change theme colors according to Telegram theme dynamically
   function applyTheme(themeParams) {
     if (!themeParams) return;
     const root = document.documentElement;
-    if (themeParams.bg_color) root.style.setProperty('--bg-color', themeParams.bg_color);
-    if (themeParams.text_color) root.style.setProperty('--text-color', themeParams.text_color);
-    if (themeParams.button_color) root.style.setProperty('--button-bg', themeParams.button_color);
-    if (themeParams.button_text_color) root.style.setProperty('--button-color', themeParams.button_text_color);
-    if (themeParams.secondary_bg_color) root.style.setProperty('--section-bg', themeParams.secondary_bg_color);
-    if (themeParams.link_color) root.style.setProperty('--header-color', themeParams.link_color);
+    try {
+      if (themeParams.bg_color) root.style.setProperty('--bg-color', themeParams.bg_color);
+      if (themeParams.text_color) root.style.setProperty('--text-color', themeParams.text_color);
+      if (themeParams.button_color) root.style.setProperty('--button-bg', themeParams.button_color);
+      if (themeParams.button_text_color) root.style.setProperty('--button-color', themeParams.button_text_color);
+      if (themeParams.secondary_bg_color) root.style.setProperty('--section-bg', themeParams.secondary_bg_color);
+      if (themeParams.link_color) root.style.setProperty('--header-color', themeParams.link_color);
+    } catch (e) {
+      console.error('Theme apply error:', e);
+    }
   }
 
   applyTheme(tg.themeParams);
 
-  // Listen to theme changes to update app colors live
   tg.onEvent('themeChanged', () => {
-    applyTheme(tg.themeParams);
+    try {
+      applyTheme(tg.themeParams);
+    } catch (e) {
+      console.error('Theme change error:', e);
+    }
   });
 
   const form = document.getElementById('assistantsForm');
   const saveBtn = document.getElementById('saveBtn');
   const statusMsg = document.getElementById('statusMsg');
 
-  // Example structure to simulate initial data request to bot
-  // This will be replaced when bot sends real data to Mini App after sendData on start
   let assistantsData = {};
 
-  // Send "request" to bot to get current assistants config on start
+  function showStatus(message, isError = false) {
+    statusMsg.textContent = message;
+    statusMsg.style.color = isError ? 'red' : '';
+  }
+
   function requestSettingsFromBot() {
     try {
       tg.sendData(JSON.stringify({ type: 'request_settings' }));
-      statusMsg.textContent = 'Requested settings from bot...';
+      showStatus('Requested settings from bot...');
     } catch (e) {
-      statusMsg.textContent = 'Error sending request to bot.';
+      console.error('Request settings error:', e);
+      showStatus('Error sending request to bot. Please try again.', true);
     }
   }
 
-  // Render the assistants edit form based on data object
   function renderForm(data) {
-    form.innerHTML = ''; // Clear previous form fields
-    if (!data || Object.keys(data).length === 0) {
-      form.innerHTML = '<p>No assistants configured.</p>';
+    try {
+      form.innerHTML = '';
+      if (!data || Object.keys(data).length === 0) {
+        form.innerHTML = '<p>No assistants configured.</p>';
+        saveBtn.disabled = true;
+        return;
+      }
+
+      Object.entries(data).forEach(([id, assistant]) => {
+        const container = document.createElement('section');
+        container.className = 'assistant';
+        container.setAttribute('aria-labelledby', `assistant-label-${id}`);
+
+        const heading = document.createElement('h3');
+        heading.id = `assistant-label-${id}`;
+        heading.textContent = assistant.name || id;
+        container.appendChild(heading);
+
+        const nameLabel = document.createElement('label');
+        nameLabel.setAttribute('for', `name-${id}`);
+        nameLabel.textContent = 'Name';
+        container.appendChild(nameLabel);
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = `name-${id}`;
+        nameInput.name = `${id}_name`;
+        nameInput.value = assistant.name || '';
+        nameInput.required = true;
+        container.appendChild(nameInput);
+
+        const modelLabel = document.createElement('label');
+        modelLabel.setAttribute('for', `model-${id}`);
+        modelLabel.textContent = 'Model';
+        container.appendChild(modelLabel);
+        const modelInput = document.createElement('input');
+        modelInput.type = 'text';
+        modelInput.id = `model-${id}`;
+        modelInput.name = `${id}_model`;
+        modelInput.value = assistant.model || '';
+        modelInput.required = true;
+        container.appendChild(modelInput);
+
+        const sysMsgLabel = document.createElement('label');
+        sysMsgLabel.setAttribute('for', `systemMessage-${id}`);
+        sysMsgLabel.textContent = 'System Message';
+        container.appendChild(sysMsgLabel);
+        const sysMsgInput = document.createElement('textarea');
+        sysMsgInput.id = `systemMessage-${id}`;
+        sysMsgInput.name = `${id}_systemMessage`;
+        sysMsgInput.value = assistant.systemMessage || '';
+        sysMsgInput.rows = 3;
+        container.appendChild(sysMsgInput);
+
+        form.appendChild(container);
+      });
+
+      saveBtn.disabled = false;
+      showStatus('');
+    } catch (e) {
+      console.error('Render form error:', e);
+      showStatus('Error rendering assistants form. Please reload.', true);
       saveBtn.disabled = true;
-      return;
     }
-
-    Object.entries(data).forEach(([id, assistant]) => {
-      const container = document.createElement('section');
-      container.className = 'assistant';
-      container.setAttribute('aria-labelledby', `assistant-label-${id}`);
-
-      const heading = document.createElement('h3');
-      heading.id = `assistant-label-${id}`;
-      heading.textContent = assistant.name || id;
-      container.appendChild(heading);
-
-      // Name field
-      const nameLabel = document.createElement('label');
-      nameLabel.setAttribute('for', `name-${id}`);
-      nameLabel.textContent = 'Name';
-      container.appendChild(nameLabel);
-      const nameInput = document.createElement('input');
-      nameInput.type = 'text';
-      nameInput.id = `name-${id}`;
-      nameInput.name = `${id}_name`;
-      nameInput.value = assistant.name || '';
-      nameInput.required = true;
-      container.appendChild(nameInput);
-
-      // Model field
-      const modelLabel = document.createElement('label');
-      modelLabel.setAttribute('for', `model-${id}`);
-      modelLabel.textContent = 'Model';
-      container.appendChild(modelLabel);
-      const modelInput = document.createElement('input');
-      modelInput.type = 'text';
-      modelInput.id = `model-${id}`;
-      modelInput.name = `${id}_model`;
-      modelInput.value = assistant.model || '';
-      modelInput.required = true;
-      container.appendChild(modelInput);
-
-      // System Message field
-      const sysMsgLabel = document.createElement('label');
-      sysMsgLabel.setAttribute('for', `systemMessage-${id}`);
-      sysMsgLabel.textContent = 'System Message';
-      container.appendChild(sysMsgLabel);
-      const sysMsgInput = document.createElement('textarea');
-      sysMsgInput.id = `systemMessage-${id}`;
-      sysMsgInput.name = `${id}_systemMessage`;
-      sysMsgInput.value = assistant.systemMessage || '';
-      sysMsgInput.rows = 3;
-      container.appendChild(sysMsgInput);
-
-      form.appendChild(container);
-    });
-
-    saveBtn.disabled = false;
   }
 
-  // Collect form data to object to send to bot
   function collectFormData() {
-    const updated = {};
-    for (const section of form.querySelectorAll('.assistant')) {
-      const heading = section.querySelector('h3');
-      const id = heading ? heading.id.replace('assistant-label-', '') : '';
-      if (!id) continue;
-      updated[id] = {
-        name: section.querySelector(`[name="${id}_name"]`).value.trim(),
-        model: section.querySelector(`[name="${id}_model"]`).value.trim(),
-        systemMessage: section.querySelector(`[name="${id}_systemMessage"]`).value.trim()
-      };
+    try {
+      const updated = {};
+      for (const section of form.querySelectorAll('.assistant')) {
+        const heading = section.querySelector('h3');
+        const id = heading ? heading.id.replace('assistant-label-', '') : '';
+        if (!id) continue;
+        updated[id] = {
+          name: section.querySelector(`[name="${id}_name"]`).value.trim(),
+          model: section.querySelector(`[name="${id}_model"]`).value.trim(),
+          systemMessage: section.querySelector(`[name="${id}_systemMessage"]`).value.trim()
+        };
+      }
+      return updated;
+    } catch (e) {
+      console.error('Collect form data error:', e);
+      showStatus('Error collecting form data. Save cancelled.', true);
+      return null;
     }
-    return updated;
   }
 
-  // Send updated assistants config back to bot on Save click
   saveBtn.addEventListener('click', () => {
     const updatedData = collectFormData();
+    if (!updatedData) return;
     const msg = JSON.stringify({ type: 'save_settings', payload: updatedData });
     try {
       tg.sendData(msg);
-      statusMsg.textContent = 'Settings saved and sent to bot.';
+      showStatus('Settings saved and sent to bot.');
     } catch (e) {
-      statusMsg.textContent = 'Failed to send settings to bot.';
+      console.error('Send data error:', e);
+      showStatus('Failed to send settings to bot.', true);
     }
   });
 
-  // Listen for data sent from bot to this Mini App
-  // The bot sends JSON with assistants data to render
   tg.onEvent('data', (rawData) => {
     if (!rawData) return;
     try {
       const dataObj = JSON.parse(rawData);
       if (dataObj && dataObj.type === 'settings' && dataObj.payload) {
         assistantsData = dataObj.payload;
-        statusMsg.textContent = 'Settings loaded.';
+        showStatus('Settings loaded.');
         renderForm(assistantsData);
       }
     } catch (e) {
-      statusMsg.textContent = 'Failed to parse data from bot.';
+      console.error('Parse data error:', e);
+      showStatus('Failed to parse data from bot.', true);
     }
   });
 
-  // Make Mini App ready and request settings on start
-  tg.ready();
-  requestSettingsFromBot();
+  try {
+    tg.ready();
+    requestSettingsFromBot();
+  } catch (e) {
+    console.error('Telegram WebApp initialization error:', e);
+    showStatus('Initialization error. Please restart the app.', true);
+  }
 })();
 </script>
 </body>
