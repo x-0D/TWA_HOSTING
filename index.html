@@ -1,153 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Telegram Mini App - Assistants Editor</title>
-<style>
-  :root {
-    --bg-color: #fff;
-    --text-color: #222;
-    --input-bg: #f7f7f7;
-    --input-border: #ccc;
-    --button-bg: #0088cc;
-    --button-color: #fff;
-    --button-bg-hover: #006699;
-    --section-bg: #f9f9f9;
-    --header-color: #0088cc;
-  }
-  body[data-theme="dark"] {
-    --bg-color: #222;
-    --text-color: #eee;
-    --input-bg: #333;
-    --input-border: #555;
-    --button-bg: #1a8cff;
-    --button-color: #fff;
-    --button-bg-hover: #005f99;
-    --section-bg: #2a2a2a;
-    --header-color: #1a8cff;
-  }
+  <meta charset="utf-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0,
+                 maximum-scale=1.0, user-scalable=no" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Telegram Mini App Template</title>
+  <style>
+    body {
+      font: 12px/18px "Lucida Grande", "Lucida Sans Unicode", Arial, Helvetica, Verdana, sans-serif;
+      margin: 48px 24px;
+      padding: 0;
 
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-  header {
-    background-color: var(--header-color);
-    padding: 12px 16px;
-    color: white;
-    font-weight: 600;
-    font-size: 1.25rem;
-    user-select: none;
-  }
-  main {
-    flex: 1;
-    padding: 16px;
-    background-color: var(--section-bg);
-  }
-  form {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-  .assistant {
-    background-color: var(--bg-color);
-    border: 1px solid var(--input-border);
-    border-radius: 6px;
-    padding: 12px 16px;
-    margin-bottom: 16px;
-  }
-  .assistant h3 {
-    margin-top: 0;
-    margin-bottom: 12px;
-    font-weight: 600;
-  }
-  label {
-    display: block;
-    font-weight: 600;
-    margin-top: 8px;
-    margin-bottom: 4px;
-  }
-  input[type="text"],
-  textarea {
-    width: 100%;
-    font-size: 1rem;
-    font-family: inherit;
-    padding: 6px 8px;
-    border-radius: 4px;
-    border: 1px solid var(--input-border);
-    background-color: var(--input-bg);
-    color: var(--text-color);
-    resize: vertical;
-  }
-  textarea {
-    min-height: 60px;
-  }
-  button {
-    display: block;
-    margin: 24px auto 0 auto;
-    padding: 12px 24px;
-    font-size: 1.1rem;
-    color: var(--button-color);
-    background-color: var(--button-bg);
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-  button:hover:not(:disabled) {
-    background-color: var(--button-bg-hover);
-  }
-  button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  .status {
-    text-align: center;
-    margin-top: 8px;
-    font-size: 0.9rem;
-    color: var(--text-color);
-  }
-</style>
-<script src="https://telegram.org/js/telegram-web-app.js?59"></script>
+      /* Telegram theme variables */
+      background-color: var(--tg-theme-bg-color);
+      color: var(--tg-theme-text-color);
+      color-scheme: var(--tg-color-scheme);
+    }
+
+    a {
+      color: var(--tg-theme-link-color);
+    }
+
+    button {
+      background-color: var(--tg-theme-button-color);
+      color: var(--tg-theme-button-text-color);
+      border: none;
+      padding: 8px 12px;
+      margin: 4px 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:active {
+      opacity: 0.8;
+    }
+
+    #viewport {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: var(--tg-viewport-stable-height, 100vh);
+      pointer-events: none;
+      transition: all .2s ease;
+    }
+    #viewport:after {
+      content: '';
+      display: block;
+      position: absolute;
+      inset: 0;
+      border-width: 4px;
+      border-style: solid;
+      border-image: linear-gradient(45deg, rgba(64,224,208,.5), rgba(173,255,47,.5)) 1;
+    }
+
+    #viewport-params-size,
+    #viewport-params-expand {
+      position: absolute;
+      right: 4px;
+      background: var(--tg-theme-link-color, rgb(64,224,208));
+      font-size: 8px;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    #viewport-params-size {
+      top: 4px;
+    }
+    #viewport-params-expand {
+      top: 30px;
+    }
+  </style>
 </head>
 <body>
-  <header>Assistants Configuration</header>
   <main>
-    <form id="assistantsForm" aria-label="Assistants Configuration Form">
-      <!-- Dynamic assistants form will be injected here -->
-    </form>
-    <button id="saveBtn" disabled>Save</button>
-    <div class="status" id="statusMsg"></div>
+    <div align="center">
+      <a href="https://ton.org/"><img width="48" src="./assets/tapps.png" alt="logo of telegram web apps"></a>
+    </div>
+    <h1>Modals</h1>
+    <button onclick="Telegram.WebApp.showAlert('Hello World!');">Launch Alert</button>
+    <button onclick="showPopup();">Launch Popup</button>
+
+    <h1>Links</h1>
+    <ul>
+      <li><a href="javascript:Telegram.WebApp.openTelegramLink('https://t.me/trendingapps');">Open link within Telegram</a></li>
+      <li><a href="javascript:Telegram.WebApp.openLink('https://ton.org/');">Open link in external browser</a></li>
+      <li><a href="javascript:Telegram.WebApp.openLink('https://telegra.ph/api',{try_instant_view:true});">Open link inside Telegram webview</a></li>
+    </ul>
+
+    <h1>Buttons</h1>
+    <button onclick="Telegram.WebApp.expand();">Expand Webview</button>
+    <button onclick="toggleMainButton();">Toggle Main Button</button>
   </main>
+
+  <div id="viewport"></div>
+  <div id="viewport-params-size"></div>
+  <div id="viewport-params-expand"></div>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
+    Telegram.WebApp.ready();
 
-(() => {
-  const tg = window.Telegram.WebApp;
+    // Main Button setup
+    Telegram.WebApp.MainButton.setParams({
+      text: 'Main Button'
+    }).onClick(() => {
+      Telegram.WebApp.showAlert('Main Button was clicked');
+    });
+    Telegram.WebApp.MainButton.show();
 
-  function applyTheme(themeParams) {
-    if (!themeParams) return;
-    const root = document.documentElement;
-    try {
-      if (themeParams.bg_color) root.style.setProperty('--bg-color', themeParams.bg_color);
-      if (themeParams.text_color) root.style.setProperty('--text-color', themeParams.text_color);
-      if (themeParams.button_color) root.style.setProperty('--button-bg', themeParams.button_color);
-      if (themeParams.button_text_color) root.style.setProperty('--button-color', themeParams.button_text_color);
-      if (themeParams.secondary_bg_color) root.style.setProperty('--section-bg', themeParams.secondary_bg_color);
-      if (themeParams.link_color) root.style.setProperty('--header-color', themeParams.link_color);
-    } catch (e) {
-      console.error('Theme apply error:', e);
+    // Popup example
+    function showPopup() {
+      Telegram.WebApp.showPopup({
+        title: 'Title',
+        message: 'Some message',
+        buttons: [
+          {id: 'link', type: 'default', text: 'Open ton.org'},
+          {type: 'cancel'}
+        ]
+      }, function(btn) {
+        if (btn === 'link') {
+          Telegram.WebApp.openLink('https://ton.org/');
+        }
+      });
     }
-  }
 
-  applyTheme(tg.themeParams);
-};)()
-<script>
+    // Toggle MainButton
+    function toggleMainButton() {
+      if (Telegram.WebApp.MainButton.isVisible) {
+        Telegram.WebApp.MainButton.hide();
+      } else {
+        Telegram.WebApp.MainButton.show();
+      }
+    }
 
+    // Viewport info
+    function setViewportData() {
+      document.getElementById('viewport-params-size').innerText =
+        `width: ${window.innerWidth} x height: ${Telegram.WebApp.viewportStableHeight}`;
+      document.getElementById('viewport-params-expand').innerText =
+        `Is Expanded: ${Telegram.WebApp.isExpanded ? 'true' : 'false'}`;
+    }
+    setViewportData();
+    Telegram.WebApp.onEvent('viewportChanged', setViewportData);
+
+    // Theme updates (auto via CSS vars)
+    Telegram.WebApp.onEvent('themeChanged', () => {
+      document.body.style.backgroundColor = Telegram.WebApp.backgroundColor;
+    });
+
+    // Header bar color
+    Telegram.WebApp.setHeaderColor('secondary_bg_color');
+  </script>
+
+  <!-- Eruda console -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
 </body>
 </html>
