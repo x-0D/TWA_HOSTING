@@ -125,6 +125,29 @@
     <button id="saveBtn" disabled>Save</button>
     <div class="status" id="statusMsg"></div>
   </main>
+  <script>
+
+(() => {
+  const tg = window.Telegram.WebApp;
+
+  function applyTheme(themeParams) {
+    if (!themeParams) return;
+    const root = document.documentElement;
+    try {
+      if (themeParams.bg_color) root.style.setProperty('--bg-color', themeParams.bg_color);
+      if (themeParams.text_color) root.style.setProperty('--text-color', themeParams.text_color);
+      if (themeParams.button_color) root.style.setProperty('--button-bg', themeParams.button_color);
+      if (themeParams.button_text_color) root.style.setProperty('--button-color', themeParams.button_text_color);
+      if (themeParams.secondary_bg_color) root.style.setProperty('--section-bg', themeParams.secondary_bg_color);
+      if (themeParams.link_color) root.style.setProperty('--header-color', themeParams.link_color);
+    } catch (e) {
+      console.error('Theme apply error:', e);
+    }
+  }
+
+  applyTheme(tg.themeParams);
+};)()
+<script>
 
 </body>
 </html>
