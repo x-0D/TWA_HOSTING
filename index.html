@@ -1,406 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Agent Settings</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --tg-theme-bg-color: #ffffff;
-            --tg-theme-text-color: #000000;
-            --tg-theme-hint-color: #999999;
-            --tg-theme-link-color: #3390ec;
-            --tg-theme-button-color: #3390ec;
-            --tg-theme-button-text-color: #ffffff;
-            --tg-theme-secondary-bg-color: #f4f4f4;
-            --tg-theme-header-bg-color: #ffffff;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Telegram Mini App - Assistants Editor</title>
+<style>
+  :root {
+    --bg-color: #fff;
+    --text-color: #222;
+    --input-bg: #f7f7f7;
+    --input-border: #ccc;
+    --button-bg: #0088cc;
+    --button-color: #fff;
+    --button-bg-hover: #006699;
+    --section-bg: #f9f9f9;
+    --header-color: #0088cc;
+  }
+  body[data-theme="dark"] {
+    --bg-color: #222;
+    --text-color: #eee;
+    --input-bg: #333;
+    --input-border: #555;
+    --button-bg: #1a8cff;
+    --button-color: #fff;
+    --button-bg-hover: #005f99;
+    --section-bg: #2a2a2a;
+    --header-color: #1a8cff;
+  }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            padding: 16px;
-            padding-bottom: 80px;
-        }
-
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--tg-theme-secondary-bg-color);
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .agent-card {
-            background-color: var(--tg-theme-secondary-bg-color);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .agent-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .agent-id {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color);
-            font-weight: 500;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group:last-child {
-            margin-bottom: 0;
-        }
-
-        label {
-            display: block;
-            font-size: 14px;
-            color: var(--tg-theme-hint-color);
-            margin-bottom: 6px;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--tg-theme-link-color);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .save-button {
-            position: fixed;
-            bottom: 16px;
-            left: 16px;
-            right: 16px;
-            background-color: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
-            border: none;
-            border-radius: 12px;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            transition: background-color 0.2s;
-        }
-
-        .save-button:hover {
-            background-color: #2b7bd9;
-        }
-
-        .save-button:active {
-            background-color: #1f6bc7;
-        }
-
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 50vh;
-            font-size: 18px;
-            color: var(--tg-theme-hint-color);
-        }
-
-        .error-message {
-            background-color: #ffeeee;
-            color: #d32f2f;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .success-message {
-            background-color: #e8f5e9;
-            color: #388e3c;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-    </style>
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    background-color: var(--header-color);
+    padding: 12px 16px;
+    color: white;
+    font-weight: 600;
+    font-size: 1.25rem;
+    user-select: none;
+  }
+  main {
+    flex: 1;
+    padding: 16px;
+    background-color: var(--section-bg);
+  }
+  form {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .assistant {
+    background-color: var(--bg-color);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+  .assistant h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-top: 8px;
+    margin-bottom: 4px;
+  }
+  input[type="text"],
+  textarea {
+    width: 100%;
+    font-size: 1rem;
+    font-family: inherit;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    resize: vertical;
+  }
+  textarea {
+    min-height: 60px;
+  }
+  button {
+    display: block;
+    margin: 24px auto 0 auto;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    color: var(--button-color);
+    background-color: var(--button-bg);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  button:hover:not(:disabled) {
+    background-color: var(--button-bg-hover);
+  }
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .status {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+  }
+</style>
+<script src="https://telegram.org/js/telegram-web-app.js?59"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Agent Settings</h1>
-        </div>
-        
-        <div id="loading" class="loading">Loading agent settings...</div>
-        <div id="error-container"></div>
-        <div id="agents-container" style="display: none;"></div>
-    </div>
-    
-    <button id="save-button" class="save-button" style="display: none;">Save Changes</button>
+  <header>Assistants Configuration</header>
+  <main>
+    <form id="assistantsForm" aria-label="Assistants Configuration Form">
+      <!-- Dynamic assistants form will be injected here -->
+    </form>
+    <button id="saveBtn" disabled>Save</button>
+    <div class="status" id="statusMsg"></div>
+  </main>
 
-    <script>
-        // Initialize Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        
-        // Set theme colors
-        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#ffffff');
-        document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
-        document.documentElement.style.setProperty('--tg-theme-hint-color', tg.themeParams.hint_color || '#999999');
-        document.documentElement.style.setProperty('--tg-theme-link-color', tg.themeParams.link_color || '#3390ec');
-        document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#3390ec');
-        document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
-        document.documentElement.style.setProperty('--tg-theme-secondary-bg-color', tg.themeParams.secondary_bg_color || '#f4f4f4');
-        document.documentElement.style.setProperty('--tg-theme-header-bg-color', tg.themeParams.header_bg_color || '#ffffff');
-        
-        // Set header color
-        tg.setHeaderColor(tg.themeParams.header_bg_color || '#ffffff');
-        
-        // Elements
-        const loadingElement = document.getElementById('loading');
-        const agentsContainer = document.getElementById('agents-container');
-        const saveButton = document.getElementById('save-button');
-        const errorContainer = document.getElementById('error-container');
-        
-        // Store agent data
-        let agentsData = {};
-        
-        // Function to show error message
-        function showError(message) {
-            errorContainer.innerHTML = `<div class="error-message">${message}</div>`;
-            setTimeout(() => {
-                errorContainer.innerHTML = '';
-            }, 5000);
-        }
-        
-        // Function to show success message
-        function showSuccess(message) {
-            errorContainer.innerHTML = `<div class="success-message">${message}</div>`;
-            setTimeout(() => {
-                errorContainer.innerHTML = '';
-            }, 3000);
-        }
-        
-        // Function to fetch agent settings from bot
-        async function fetchAgentSettings() {
-            try {
-                // Send request to bot for agent settings
-                const requestData = {
-                    action: 'get_agent_settings',
-                    user_id: tg.initDataUnsafe.user.id,
-                    query_id: tg.initDataUnsafe.query_id
-                };
-                
-                // Send data to bot
-                tg.sendData(JSON.stringify(requestData));
-                
-                // Set up event listener for bot response
-                const responsePromise = new Promise((resolve, reject) => {
-                    const handleEvent = (event) => {
-                        try {
-                            // Parse the event data
-                            const eventData = JSON.parse(event.data);
-                            
-                            // Check if this is the response we're waiting for
-                            if (eventData.action === 'agent_settings_response') {
-                                tg.offEvent('web_app_data', handleEvent);
-                                resolve(eventData);
-                            }
-                        } catch (error) {
-                            console.error('Error parsing event data:', error);
-                        }
-                    };
-                    
-                    // Set up timeout
-                    const timeoutId = setTimeout(() => {
-                        tg.offEvent('web_app_data', handleEvent);
-                        reject(new Error('Request timed out'));
-                    }, 10000); // 10 second timeout
-                    
-                    // Listen for web_app_data event
-                    tg.onEvent('web_app_data', handleEvent);
-                });
-                
-                // Wait for response
-                const response = await responsePromise;
-                
-                // Process the response
-                if (response.success && response.data) {
-                    agentsData = response.data;
-                    renderAgents();
-                    loadingElement.style.display = 'none';
-                    agentsContainer.style.display = 'block';
-                    saveButton.style.display = 'block';
-                } else {
-                    showError(response.error || "Failed to load agent settings");
-                    loadingElement.style.display = 'none';
-                }
-            } catch (error) {
-                console.error('Error fetching agent settings:', error);
-                showError("Failed to load agent settings. Please try again.");
-                loadingElement.style.display = 'none';
-            }
-        }
-        
-        // Function to render agent cards
-        function renderAgents() {
-            agentsContainer.innerHTML = '';
-            
-            Object.keys(agentsData).forEach(agentId => {
-                const agent = agentsData[agentId];
-                
-                const agentCard = document.createElement('div');
-                agentCard.className = 'agent-card';
-                agentCard.innerHTML = `
-                    <div class="agent-header">
-                        <div class="agent-id">${agentId}</div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="name-${agentId}">Name</label>
-                        <input type="text" id="name-${agentId}" value="${agent.name}" data-agent-id="${agentId}" data-field="name">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="model-${agentId}">Model</label>
-                        <select id="model-${agentId}" data-agent-id="${agentId}" data-field="model">
-                            <option value="openai/gpt-3.5-turbo" ${agent.model === 'openai/gpt-3.5-turbo' ? 'selected' : ''}>OpenAI GPT-3.5 Turbo</option>
-                            <option value="openai/gpt-4" ${agent.model === 'openai/gpt-4' ? 'selected' : ''}>OpenAI GPT-4</option>
-                            <option value="anthropic/claude-2" ${agent.model === 'anthropic/claude-2' ? 'selected' : ''}>Anthropic Claude 2</option>
-                            <option value="google/palm-2" ${agent.model === 'google/palm-2' ? 'selected' : ''}>Google PaLM 2</option>
-                            <option value="meta/llama-2" ${agent.model === 'meta/llama-2' ? 'selected' : ''}>Meta Llama 2</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="system-${agentId}">System Message</label>
-                        <textarea id="system-${agentId}" data-agent-id="${agentId}" data-field="systemMessage">${agent.systemMessage}</textarea>
-                    </div>
-                `;
-                
-                agentsContainer.appendChild(agentCard);
-            });
-            
-            // Add event listeners to all inputs
-            document.querySelectorAll('input, textarea, select').forEach(element => {
-                element.addEventListener('input', handleInputChange);
-            });
-        }
-        
-        // Function to handle input changes
-        function handleInputChange(event) {
-            const agentId = event.target.dataset.agentId;
-            const field = event.target.dataset.field;
-            const value = event.target.value;
-            
-            if (agentsData[agentId]) {
-                agentsData[agentId][field] = value;
-            }
-        }
-        
-        // Function to save changes
-        async function saveChanges() {
-            try {
-                // Prepare data for sending to bot
-                const dataToSend = {
-                    action: 'save_agent_settings',
-                    user_id: tg.initDataUnsafe.user.id,
-                    query_id: tg.initDataUnsafe.query_id,
-                    data: agentsData
-                };
-                
-                // Disable save button and show loading state
-                saveButton.disabled = true;
-                saveButton.textContent = 'Saving...';
-                
-                // Send data to bot
-                tg.sendData(JSON.stringify(dataToSend));
-                
-                // Set up event listener for save confirmation
-                const responsePromise = new Promise((resolve, reject) => {
-                    const handleEvent = (event) => {
-                        try {
-                            const eventData = JSON.parse(event.data);
-                            
-                            if (eventData.action === 'save_agent_settings_response') {
-                                tg.offEvent('web_app_data', handleEvent);
-                                resolve(eventData);
-                            }
-                        } catch (error) {
-                            console.error('Error parsing event data:', error);
-                        }
-                    };
-                    
-                    // Set up timeout
-                    const timeoutId = setTimeout(() => {
-                        tg.offEvent('web_app_data', handleEvent);
-                        reject(new Error('Save request timed out'));
-                    }, 10000); // 10 second timeout
-                    
-                    // Listen for web_app_data event
-                    tg.onEvent('web_app_data', handleEvent);
-                });
-                
-                // Wait for response
-                const response = await responsePromise;
-                
-                // Process the response
-                if (response.success) {
-                    showSuccess("Agent settings saved successfully!");
-                } else {
-                    showError(response.error || "Failed to save agent settings");
-                }
-            } catch (error) {
-                console.error('Error saving agent settings:', error);
-                showError("Failed to save agent settings. Please try again.");
-            } finally {
-                // Re-enable save button
-                saveButton.disabled = false;
-                saveButton.textContent = 'Save Changes';
-            }
-        }
-        
-        // Event listeners
-        saveButton.addEventListener('click', saveChanges);
-        
-        // Initialize the app
-        fetchAgentSettings();
-    </script>
+<script>
+(() => {
+  const tg = window.Telegram.WebApp;
+
+  // Change theme colors according to Telegram theme dynamically
+  function applyTheme(themeParams) {
+    if (!themeParams) return;
+    const root = document.documentElement;
+    if (themeParams.bg_color) root.style.setProperty('--bg-color', themeParams.bg_color);
+    if (themeParams.text_color) root.style.setProperty('--text-color', themeParams.text_color);
+    if (themeParams.button_color) root.style.setProperty('--button-bg', themeParams.button_color);
+    if (themeParams.button_text_color) root.style.setProperty('--button-color', themeParams.button_text_color);
+    if (themeParams.secondary_bg_color) root.style.setProperty('--section-bg', themeParams.secondary_bg_color);
+    if (themeParams.link_color) root.style.setProperty('--header-color', themeParams.link_color);
+  }
+
+  applyTheme(tg.themeParams);
+
+  // Listen to theme changes to update app colors live
+  tg.onEvent('themeChanged', () => {
+    applyTheme(tg.themeParams);
+  });
+
+  const form = document.getElementById('assistantsForm');
+  const saveBtn = document.getElementById('saveBtn');
+  const statusMsg = document.getElementById('statusMsg');
+
+  // Example structure to simulate initial data request to bot
+  // This will be replaced when bot sends real data to Mini App after sendData on start
+  let assistantsData = {};
+
+  // Send "request" to bot to get current assistants config on start
+  function requestSettingsFromBot() {
+    try {
+      tg.sendData(JSON.stringify({ type: 'request_settings' }));
+      statusMsg.textContent = 'Requested settings from bot...';
+    } catch (e) {
+      statusMsg.textContent = 'Error sending request to bot.';
+    }
+  }
+
+  // Render the assistants edit form based on data object
+  function renderForm(data) {
+    form.innerHTML = ''; // Clear previous form fields
+    if (!data || Object.keys(data).length === 0) {
+      form.innerHTML = '<p>No assistants configured.</p>';
+      saveBtn.disabled = true;
+      return;
+    }
+
+    Object.entries(data).forEach(([id, assistant]) => {
+      const container = document.createElement('section');
+      container.className = 'assistant';
+      container.setAttribute('aria-labelledby', `assistant-label-${id}`);
+
+      const heading = document.createElement('h3');
+      heading.id = `assistant-label-${id}`;
+      heading.textContent = assistant.name || id;
+      container.appendChild(heading);
+
+      // Name field
+      const nameLabel = document.createElement('label');
+      nameLabel.setAttribute('for', `name-${id}`);
+      nameLabel.textContent = 'Name';
+      container.appendChild(nameLabel);
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.id = `name-${id}`;
+      nameInput.name = `${id}_name`;
+      nameInput.value = assistant.name || '';
+      nameInput.required = true;
+      container.appendChild(nameInput);
+
+      // Model field
+      const modelLabel = document.createElement('label');
+      modelLabel.setAttribute('for', `model-${id}`);
+      modelLabel.textContent = 'Model';
+      container.appendChild(modelLabel);
+      const modelInput = document.createElement('input');
+      modelInput.type = 'text';
+      modelInput.id = `model-${id}`;
+      modelInput.name = `${id}_model`;
+      modelInput.value = assistant.model || '';
+      modelInput.required = true;
+      container.appendChild(modelInput);
+
+      // System Message field
+      const sysMsgLabel = document.createElement('label');
+      sysMsgLabel.setAttribute('for', `systemMessage-${id}`);
+      sysMsgLabel.textContent = 'System Message';
+      container.appendChild(sysMsgLabel);
+      const sysMsgInput = document.createElement('textarea');
+      sysMsgInput.id = `systemMessage-${id}`;
+      sysMsgInput.name = `${id}_systemMessage`;
+      sysMsgInput.value = assistant.systemMessage || '';
+      sysMsgInput.rows = 3;
+      container.appendChild(sysMsgInput);
+
+      form.appendChild(container);
+    });
+
+    saveBtn.disabled = false;
+  }
+
+  // Collect form data to object to send to bot
+  function collectFormData() {
+    const updated = {};
+    for (const section of form.querySelectorAll('.assistant')) {
+      const heading = section.querySelector('h3');
+      const id = heading ? heading.id.replace('assistant-label-', '') : '';
+      if (!id) continue;
+      updated[id] = {
+        name: section.querySelector(`[name="${id}_name"]`).value.trim(),
+        model: section.querySelector(`[name="${id}_model"]`).value.trim(),
+        systemMessage: section.querySelector(`[name="${id}_systemMessage"]`).value.trim()
+      };
+    }
+    return updated;
+  }
+
+  // Send updated assistants config back to bot on Save click
+  saveBtn.addEventListener('click', () => {
+    const updatedData = collectFormData();
+    const msg = JSON.stringify({ type: 'save_settings', payload: updatedData });
+    try {
+      tg.sendData(msg);
+      statusMsg.textContent = 'Settings saved and sent to bot.';
+    } catch (e) {
+      statusMsg.textContent = 'Failed to send settings to bot.';
+    }
+  });
+
+  // Listen for data sent from bot to this Mini App
+  // The bot sends JSON with assistants data to render
+  tg.onEvent('data', (rawData) => {
+    if (!rawData) return;
+    try {
+      const dataObj = JSON.parse(rawData);
+      if (dataObj && dataObj.type === 'settings' && dataObj.payload) {
+        assistantsData = dataObj.payload;
+        statusMsg.textContent = 'Settings loaded.';
+        renderForm(assistantsData);
+      }
+    } catch (e) {
+      statusMsg.textContent = 'Failed to parse data from bot.';
+    }
+  });
+
+  // Make Mini App ready and request settings on start
+  tg.ready();
+  requestSettingsFromBot();
+})();
+</script>
 </body>
 </html>
